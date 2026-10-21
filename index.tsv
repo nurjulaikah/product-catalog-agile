@@ -1,0 +1,11 @@
+num	title	type	points	sprint	status	file
+1	Create a product in the catalog	enhancement	3	yes	Done	01-create-product.md
+2	Retrieve a product from the catalog	enhancement	2	yes	Done	02-retrieve-product.md
+3	Update a product in the catalog	enhancement	3	yes	In Progress	03-update-product.md
+4	Delete a product from the catalog	enhancement	2	yes	In Progress	04-delete-product.md
+5	Like a product	enhancement	2	no	Product Backlog	05-like-product.md
+6	Dislike a product	enhancement	2	no	Product Backlog	06-dislike-product.md
+7	List all products in the catalog	enhancement	3	yes	In Progress	07-list-products.md
+8	Query a subset of products	enhancement	5	no	Product Backlog	08-query-products.md
+9	Host the catalog in the cloud	technical debt	8	no	Product Backlog	09-host-in-cloud.md
+10	Automate deployment of new changes to the cloud	technical debt	5	no	Product Backlog	10-automate-deployment.md
