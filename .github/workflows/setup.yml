@@ -1,0 +1,52 @@
+name: Setup sprint backlog
+
+on: workflow_dispatch
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      OWNER: ${{ github.repository_owner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create labels, milestone and stories
+        run: |
+          set -euo pipefail
+          if [ "$(gh issue list --state all --json number --jq length)" != "0" ]; then
+            echo "Issues already exist, stopping."
+            exit 1
+          fi
+
+          mk() { gh label create "$1" --color "$2" --description "$3" --force; }
+          mk "enhancement" "a2eeef" "Feature customers or administrators will use"
+          mk "technical debt" "d93f0b" "Infrastructure work with no customer-facing feature"
+          for p in 1 2 3 5 8; do mk "estimate: $p" "ededed" "Story points: $p"; done
+
+          gh api "repos/$GH_REPO/milestones" -f title="Sprint 1" -f state=open \
+            -f description="Deliver the core catalog operations: create, retrieve, update, delete and list products." \
+            -f due_on="2026-10-23T23:59:59Z"
+
+          new() {
+            args=(--title "$2" --body-file "$1" --label "$3" --label "estimate: $4" --assignee "$OWNER")
+            if [ -n "${5:-}" ]; then args+=(--milestone "$5"); fi
+            gh issue create "${args[@]}"
+          }
+          new 01-create-product.md "Create a product in the catalog" "enhancement" 3 "Sprint 1"
+          new 02-retrieve-product.md "Retrieve a product from the catalog" "enhancement" 2 "Sprint 1"
+          new 03-update-product.md "Update a product in the catalog" "enhancement" 3 "Sprint 1"
+          new 04-delete-product.md "Delete a product from the catalog" "enhancement" 2 "Sprint 1"
+          new 05-like-product.md "Like a product" "enhancement" 2
+          new 06-dislike-product.md "Dislike a product" "enhancement" 2
+          new 07-list-products.md "List all products in the catalog" "enhancement" 3 "Sprint 1"
+          new 08-query-products.md "Query a subset of products" "enhancement" 5
+          new 09-host-in-cloud.md "Host the catalog in the cloud" "technical debt" 8
+          new 10-automate-deployment.md "Automate deployment of new changes to the cloud" "technical debt" 5
+
+          gh issue close 1 --comment "Done in Sprint 1."
+          gh issue close 2 --comment "Done in Sprint 1."
